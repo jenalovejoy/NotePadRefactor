@@ -1,0 +1,9 @@
+"Code Smells" (ordered by importance)
+    - Method actionPerformed() is far too long
+    - Save, Paste, Print conditions could be extracted into their own methods
+    - actionPerformed() has a long, complex if/else statement 
+    - Line 93 - entire print method inside of another method
+    - "returnVal" only used as a temp in if statement, so fc.showSaveDialog(null) can just be called in the if statement
+    - Poor variable names
+    - Line 37-59 could be refactored such that there are not repeated GUI setup statements
+    - Line 71 - e.getActionCommand() is called in each if statement, could be saved in one variable so it's not continually called

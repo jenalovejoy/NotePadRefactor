@@ -1,0 +1,17 @@
+Refactor Log
+
+    - Reorganize GUI Construction
+        - All variable names moved from 1-2 letters to descriptive names. Names include what they are tied to, and what type of element they are for consistency and clarity
+        - All menuItems put into array -> each have addActionListener() and setActionCommand() applied to them, so this is accomplished with a for-each to reduce duplicated code
+
+    - Restructure actionPerformed()
+        - Long if/else sections extracted into their own methods to clean actionPerformed(), making it more straightforward and easy to read quickly. Extracted methods include:
+            - Save
+            - Print
+            - Paste
+        - Copy and New only include one statement, so those were left as-is
+        - If/else transitioned to switch statement to make it easier to read
+
+    - Clean saveFile()
+        - fc.showSaveDialog(null) moved outside of returnVal, as returnVal is only used once. fc.showSaveDialog(null) called in the one occurance
+        
