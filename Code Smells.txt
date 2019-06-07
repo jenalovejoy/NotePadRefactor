@@ -7,3 +7,4 @@
     - Poor variable names
     - Line 37-59 could be refactored such that there are not repeated GUI setup statements
     - Line 71 - e.getActionCommand() is called in each if statement, could be saved in one variable so it's not continually called
+    - Get rid of undo

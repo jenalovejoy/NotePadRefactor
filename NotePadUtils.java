@@ -31,19 +31,44 @@ import java.util.*;
 
 public class NotePadUtils {
 
-    private static Queue<File> recentFiles;
+    private static ArrayList<File> recentFiles;
+    private static ArrayList<JMenuItem> recentMenuItems;
+    private static int recentFileCount = 0;
     private static RecentFilter filter;
 
-    private static void manageQueue(File file){
-        if (recentFiles == null){
-            recentFiles = new LinkedList<File>();
+    private static void manageRecentFiles(File file, JMenuItem openRecentFileMenuItem){
+        if (recentFileCount == 0){
+            recentFiles = new ArrayList<File>();
+            recentMenuItems = new ArrayList<JMenuItem>();
         }
 
-        if (recentFiles.size() > 5){
-            recentFiles.remove();
-        } 
-        recentFiles.add(file);
+        if (recentFileCount == 5){
+            recentFiles.remove(4);
+            recentFileCount--;
+            openRecentFileMenuItem.remove(recentMenuItems.remove(4));
+        }
 
+        String fileName = file.getName();
+        recentFiles.add(0, file);
+        recentMenuItems.add(new JMenuItem(fileName));
+        recentFileCount++;
+        
+        if (recentFileCount == 1){
+            openRecentFileMenuItem.add(recentMenuItems.get(0));
+
+        } else {
+            refreshRecentFiles(openRecentFileMenuItem);
+        }
+    }
+
+    private static void refreshRecentFiles(JMenuItem openRecentFileMenuItem){
+        for (JMenuItem recentFile : recentMenuItems){
+            openRecentFileMenuItem.remove(recentFile);
+        }
+
+        for (JMenuItem recentFile : recentMenuItems){
+            openRecentFileMenuItem.add(recentFile);
+        }
     }
 
     public static void saveFile(JTextPane textPane){
@@ -60,18 +85,12 @@ public class NotePadUtils {
         }
     }
 
-    public static void openFile(JTextPane textPane, boolean isRecent){
+    public static void openFile(JTextPane textPane, JMenuItem openRecentFileMenuItem){
         JFileChooser fc = new JFileChooser();
-
-        // if (isRecent){
-        //     FileFilter filter = new RecentFilter(recentFiles);
-        //     fc.setFileFilter((javax.swing.filechooser.FileFilter) filter);
-            
-        // }
 
         fc.showOpenDialog(null); 
         File fileToOpen = fc.getSelectedFile();
-        manageQueue(fileToOpen);
+        manageQueue(fileToOpen, openRecentFileMenuItem);
 
         try {
             FileReader fileReader = new FileReader(fileToOpen);
@@ -85,6 +104,8 @@ public class NotePadUtils {
         } catch (FileNotFoundException ex) {
         } catch (IOException ix){}
     }
+
+    public static void openRecent(){}
 
     public static void printFile(JTextPane textPane, SimpleNotePad frame){
         try {
