@@ -41,19 +41,22 @@ public class SimpleNotePad extends JFrame implements ActionListener {
     JMenuItem saveFileMenuItem = new JMenuItem("Save File");
     JMenuItem printFileMenuItem = new JMenuItem("Print File");
     JMenuItem openFileMenuItem = new JMenuItem("Open File");
-    JMenuItem openRecentFileMenuItem = new JMenuItem("Recent");
+
+    JMenu openRecentFileMenu = new JMenu("Recent Files");
 
     JMenuItem undoFileMenuItem = new JMenuItem("Undo");
     JMenuItem copyMenuFileItem = new JMenuItem("Copy");
     JMenuItem pasteMenuFileItem = new JMenuItem("Paste");
     JMenuItem replaceMenuFileItem = new JMenuItem("Simple Replace");
 
+    JFrame replaceWordFrame = new JFrame();
+
     public SimpleNotePad() {
 
         setTitle("A Simple Notepad Tool");
         
-        JMenuItem[] fileMenuItems = {newFileMenuItem, saveFileMenuItem, printFileMenuItem, openFileMenuItem, openRecentFileMenuItem};
-        String[] fileMenuTitle = {"new", "save", "print", "open", "open recent"};
+        JMenuItem[] fileMenuItems = {newFileMenuItem, saveFileMenuItem, printFileMenuItem, openFileMenuItem};
+        String[] fileMenuTitle = {"new", "save", "print", "open"};
         
         JMenuItem[] actionMenuItems = {copyMenuFileItem, pasteMenuFileItem, undoFileMenuItem, replaceMenuFileItem};
         String[] actionMenuTitle = {"copy", "paste", "undo", "replace"};
@@ -70,6 +73,8 @@ public class SimpleNotePad extends JFrame implements ActionListener {
             i++;
         }
 
+        fileMenu.add(openRecentFileMenu);
+
         i = 0;
 
         for (JMenuItem m : actionMenuItems){
@@ -81,6 +86,7 @@ public class SimpleNotePad extends JFrame implements ActionListener {
 
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+
 
         setJMenuBar(menuBar);
         add(new JScrollPane(textPane));
@@ -97,7 +103,6 @@ public class SimpleNotePad extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         String action = e.getActionCommand();
-
         System.out.println(action);
 
         switch (action){
@@ -110,11 +115,11 @@ public class SimpleNotePad extends JFrame implements ActionListener {
                 break;
 
             case "open":
-                NotePadUtils.openFile(textPane, openRecentFileMenuItem);
+                NotePadUtils.openFileChooser(textPane, openRecentFileMenu);
                 break;
 
             case "open recent":
-                NotePadUtils.openRecentFile(textPane, openRecentFileMenuItem);
+                System.out.println("File");
                 break;
 
             case "print":
@@ -131,6 +136,7 @@ public class SimpleNotePad extends JFrame implements ActionListener {
                 break; 
 
             case "replace":
+                NotePadUtils.replaceWord(textPane, replaceWordFrame);
                 break;
         }
     }
