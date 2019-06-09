@@ -35,9 +35,8 @@ public class NotePadUtils {
     private static ArrayList<JMenuItem> recentMenuItems; // Tracks file-associated GUI elements
     private static int recentFileCount = 0; // Tracks how many recent files are saved
 
-    
-
     // SAVE FILE FUNCTIONALITY
+
     // Writes written text to a new file to save
     public static void saveFile(JTextPane textPane){
         File fileToWrite = null;
@@ -60,12 +59,12 @@ public class NotePadUtils {
     // OPEN FILE FUNCTIONALITY
 
     // Opens the JFileChooser for user to select file to open
-    public static void openFileChooser(JTextPane textPane, JMenu openRecentFileMenu){
+    public static void openFileChooser(JTextPane textPane, JMenu openRecentFileMenu, SimpleNotePad notepad){
         JFileChooser fc = new JFileChooser();
         fc.showOpenDialog(null); 
         File fileToOpen = fc.getSelectedFile();
 
-        manageRecentFiles(fileToOpen, openRecentFileMenu); // tracks which file has been opened to be shown as "recent"
+        manageRecentFiles(fileToOpen, openRecentFileMenu, notepad); // tracks which file has been opened to be shown as "recent"
 
         openFile(textPane, fileToOpen);
     }
@@ -85,20 +84,22 @@ public class NotePadUtils {
         } catch (IOException ix){}
     }
 
+    // Manages opening recent files
+    public static void openRecent(String actionIndex, JTextPane textPane){
+
+        int fileToOpenIndex = Integer.parseInt(actionIndex);
+
+        openFile(textPane, recentFiles.get(fileToOpenIndex));
+
+    }
+
     // Manages recent files: saves information of opened files, creates GUI elements for those files, and removes older files
-    private static void manageRecentFiles(File file, JMenu openRecentFileMenu){
+    private static void manageRecentFiles(File file, JMenu openRecentFileMenu, SimpleNotePad notepad){
 
         // If there are no recent files, instantiate file-tracking ArrayLists
         if (recentFileCount == 0){
             recentFiles = new ArrayList<File>();
             recentMenuItems = new ArrayList<JMenuItem>();
-        }
-
-        // If there are the maximum recent files, remove the oldest
-        if (recentFileCount == 5){
-            recentFiles.remove(4); // The file itself
-            recentFileCount--;
-            openRecentFileMenu.remove(recentMenuItems.remove(4)); // The file GUI element
         }
 
         String fileName = file.getName();
@@ -107,7 +108,16 @@ public class NotePadUtils {
         if (recentFiles.contains(file)){
             int index = recentFiles.indexOf(file);
             recentFiles.remove(file);
-            recentMenuItems.remove(index);
+            JMenuItem menuItem = recentMenuItems.remove(index); // don't have name of menu item, so it needs to be removed by index
+            openRecentFileMenu.remove(menuItem);
+            recentFileCount--;
+        }
+
+        // If there are the maximum recent files, remove the oldest
+        if (recentFileCount == 5){
+            recentFiles.remove(4); // The file itself
+            recentFileCount--;
+            openRecentFileMenu.remove(recentMenuItems.remove(4)); // The file GUI element
         }
 
         // Adds file and file GUI elements to associated ArrayLists
@@ -120,18 +130,23 @@ public class NotePadUtils {
         if (recentFileCount == 0){
             openRecentFileMenu.add(recentMenuItems.get(0));
         } else {
-            refreshRecentFiles(openRecentFileMenu);
+            refreshRecentFiles(openRecentFileMenu, notepad);
         }
     }
 
     // Removes all GUI elements to add elements back in the correct order
-    private static void refreshRecentFiles(JMenu openRecentFileMenu){
+    private static void refreshRecentFiles(JMenu openRecentFileMenu, SimpleNotePad notepad){
         for (JMenuItem recentFile : recentMenuItems){
             openRecentFileMenu.remove(recentFile);
         }
+        
+        int i = 0;
 
         for (JMenuItem recentFile : recentMenuItems){
+            recentFile.addActionListener(notepad);
+            recentFile.setActionCommand(i + "");
             openRecentFileMenu.add(recentFile);
+            i++;
         }
     }
 
@@ -163,10 +178,14 @@ public class NotePadUtils {
         }
     }
 
+    // REPLACE WORD FUNCTIONALITY
+
     // Given a highlighted word, prompts the user for text input to replace the highlighted word with, then replaces it
     public static void replaceWord(JTextPane textPane, JFrame replaceWordFrame){
+     
         String replaceWord = JOptionPane.showInputDialog(replaceWordFrame, "Replace or insert with", "Replace");
         textPane.replaceSelection(replaceWord);
+   
     }
 
 }

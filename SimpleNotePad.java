@@ -31,24 +31,28 @@ import java.io.FileFilter;
 
 public class SimpleNotePad extends JFrame implements ActionListener {
 
+    // Creates all menus
     JMenuBar menuBar = new JMenuBar();
     JMenu fileMenu = new JMenu("File");
     JMenu editMenu = new JMenu("Edit");
 
+    // Creates main text window
     JTextPane textPane = new JTextPane();
 
+    // Creates interactable menu elements
     JMenuItem newFileMenuItem = new JMenuItem("New File");
     JMenuItem saveFileMenuItem = new JMenuItem("Save File");
     JMenuItem printFileMenuItem = new JMenuItem("Print File");
     JMenuItem openFileMenuItem = new JMenuItem("Open File");
 
-    JMenu openRecentFileMenu = new JMenu("Recent Files");
+    JMenu openRecentFileMenu = new JMenu("Recent");
 
     JMenuItem undoFileMenuItem = new JMenuItem("Undo");
     JMenuItem copyMenuFileItem = new JMenuItem("Copy");
     JMenuItem pasteMenuFileItem = new JMenuItem("Paste");
-    JMenuItem replaceMenuFileItem = new JMenuItem("Simple Replace");
+    JMenuItem replaceMenuFileItem = new JMenuItem("Replace");
 
+    // Creates pop-up menu frame for replacing text prompt
     JFrame replaceWordFrame = new JFrame();
 
     public SimpleNotePad() {
@@ -63,11 +67,12 @@ public class SimpleNotePad extends JFrame implements ActionListener {
 
         int i = 0;
 
+        // Add each file menu item to the file menu, and attach a listener for user interaction
         for (JMenuItem m : fileMenuItems){
             m.addActionListener(this);
             m.setActionCommand(fileMenuTitle[i]);
             fileMenu.add(m);
-            if (i < fileMenuItems.length - 1){
+            if (i < fileMenuItems.length - 1){ // if it's not the last element, add a separator
                 fileMenu.addSeparator();
             }
             i++;
@@ -77,6 +82,7 @@ public class SimpleNotePad extends JFrame implements ActionListener {
 
         i = 0;
 
+        // Add each edit menu item to the edit menu, and attach a listener for user interaction
         for (JMenuItem m : actionMenuItems){
             m.addActionListener(this);
             m.setActionCommand(actionMenuTitle[i]);
@@ -84,9 +90,9 @@ public class SimpleNotePad extends JFrame implements ActionListener {
             i++;
         }
 
+        // Add file and edit menus to menu bar
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
-
 
         setJMenuBar(menuBar);
         add(new JScrollPane(textPane));
@@ -95,6 +101,8 @@ public class SimpleNotePad extends JFrame implements ActionListener {
         setVisible(true);
         pack();
     }
+
+    // Creates and runs SimpleNotePad instance
     public static void main(String[] args) {
         SimpleNotePad app = new SimpleNotePad();
     }
@@ -103,41 +111,38 @@ public class SimpleNotePad extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         String action = e.getActionCommand();
-        System.out.println(action);
 
         switch (action){
-            case "new":
+            case "new": // Creating a new file
                 textPane.setText("");
                 break;
 
-            case "save":
+            case "save": // Saving current file
                 NotePadUtils.saveFile(textPane);
                 break;
 
-            case "open":
-                NotePadUtils.openFileChooser(textPane, openRecentFileMenu);
+            case "open": // Opening a file
+                NotePadUtils.openFileChooser(textPane, openRecentFileMenu, this);
                 break;
 
-            case "open recent":
-                System.out.println("File");
-                break;
-
-            case "print":
+            case "print": // Print current file
                 NotePadUtils.printFile(textPane, this);
-                // printFile();
                 break;
             
-            case "copy":
+            case "copy": // Copy highlighted text
                 textPane.copy();
                 break;
 
-            case "paste":
+            case "paste": // Paste previously copied text
                 textPane.paste();  
                 break; 
 
-            case "replace":
+            case "replace": // Replace highlighted text with user-prompted input
                 NotePadUtils.replaceWord(textPane, replaceWordFrame);
                 break;
+
+            default: // catches all "open recent file" options
+                NotePadUtils.openRecent(action, textPane);
         }
     }
 }

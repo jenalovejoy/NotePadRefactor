@@ -1,0 +1,40 @@
+Code Refactoring
+
+    1. Solve: Undescriptive, confusing variable names make the rest of the program hard to parse
+
+        While functionally this is not the biggest issue, it was the first to fix to make interacting 
+        with the rest of the code and GUI elements more straightforward. The 1-2 letter variable names 
+        now follow a consistent, descriptive format.
+
+    2. Solve: Method actionPerformed() is too bloated/long, 
+              actionPerformed() has a long, complex if/else statement 
+              Save, Paste, Print conditions could be extracted into their own methods
+
+        Created NotePadUtils class to hold abstracted methods. Save and Print each individually have 
+        saveFile() and printFile() within this.
+        Paste had unnecessary lines of code, which were then removed, leaving "d.paste()" alone.
+
+        Once the if/else was paired down to abstracted methods, it was translated to a switch statement 
+        for better readability and fewer unnecessary characters.
+
+        Within NotePadUtils, "open" was broken into more methods to allow recent file tracking and separation 
+        of selecting a file and opening said file. 
+
+    3. Solve: GUI element set-up has many repeated statements
+
+        Each type of GUI element object was placed into an array by type of functionality (file or edit).
+        Those arrays are iterated over to reduce repeated code and connect the necessary elements to menu bars, 
+        and listeners to elements. In moving to an array, there is some increased logic required for tracking index, 
+        but overall extraneous code is removed.
+
+    4. Solve: "returnVal" only used as a temp in if statement, so fc.showSaveDialog(null) can just be called in the if statement
+
+        Did exactly that.
+
+    5. Solve: e.getActionCommand() is called in each if statement, could be saved in one variable so it's not continually called
+
+        Saved in a variable to avoid repeated calls
+
+    6. Solve: Undo does not currently provide any functionality
+
+        Removed undo method and condition
