@@ -80,14 +80,12 @@ public class SimpleNotePad extends JFrame implements ActionListener {
 
         fileMenu.add(openRecentFileMenu);
 
-        i = 0;
-
         // Add each edit menu item to the edit menu, and attach a listener for user interaction
-        for (JMenuItem m : actionMenuItems){
+        for (int i = 0; i < actionMenuItems.length(); i++){
+            JMenuItem m = actionMenuItems.get(i);
             m.addActionListener(this);
             m.setActionCommand(actionMenuTitle[i]);
             editMenu.add(m);
-            i++;
         }
 
         // Add file and edit menus to menu bar
@@ -142,10 +140,10 @@ public class SimpleNotePad extends JFrame implements ActionListener {
                 break;
 
             default: // catches all "open recent file" options
-
                 try {
-                    int action = Integer.parseInt(action);
-                    NotePadUtils.openRecent(action, textPane);
+                    int recentFileIndex = Integer.parseInt(action);
+                    NotePadUtils.openRecent(recentFileIndex, textPane, openRecentFileMenu, this);
+
                 } catch (NumberFormatException ex){}
         }
     }

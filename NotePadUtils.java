@@ -86,8 +86,10 @@ public class NotePadUtils {
     }
 
     // Manages opening recent files
-    public static void openRecent(int fileToOpenIndex, JTextPane textPane){
-        openFile(textPane, recentFiles.get(fileToOpenIndex));
+    public static void openRecent(int fileToOpenIndex, JTextPane textPane, JMenu openRecentFileMenu, SimpleNotePad notepad){
+        File file = recentFiles.get(fileToOpenIndex);
+        openFile(textPane, file);
+        manageRecentFiles(file, openRecentFileMenu, notepad);
     }
 
     // Manages recent files: saves information of opened files, creates GUI elements for those files, and removes older files
@@ -107,6 +109,7 @@ public class NotePadUtils {
             recentFiles.remove(file);
             openRecentFileMenu.remove(recentMenuItems.remove(index));
             recentFileCount--;
+            System.out.println("repeated");
         }
 
         // If there are the maximum recent files, remove the oldest
@@ -119,12 +122,17 @@ public class NotePadUtils {
         // Adds file and file GUI elements to associated ArrayLists
         recentFiles.add(0, file); // Adds to the beginning of the ArrayList -> list is sorted most recent descending
         recentMenuItems.add(0, new JMenuItem(fileName));
+        System.out.println(recentFiles);
         recentFileCount++;
         
         // If there are no other recent files, add the first one
         // Otherwise, "refresh" the GUI such that the top file is the most recent, and the bottom in the order is the oldest
         if (recentFileCount == 1){
-            openRecentFileMenu.add(recentMenuItems.get(0));
+            JMenuItem recentFile = recentMenuItems.get(0);
+            openRecentFileMenu.add(recentFile);
+            recentFile.addActionListener(notepad);
+            recentFile.setActionCommand(0 + "");
+
         } else {
             refreshRecentFiles(openRecentFileMenu, notepad);
         }
@@ -134,11 +142,23 @@ public class NotePadUtils {
     private static void refreshRecentFiles(JMenu openRecentFileMenu, SimpleNotePad notepad){
         openRecentFileMenu.removeAll();
         
-        for (int i = 0; i < recentMenuItems.length(); i++){
+        // Add files to the menu in the correct order, and attach action listeners and commands
+        for (int i = 0; i < recentFileCount; i++){
+            // Get current file item
             JMenuItem recentFile = recentMenuItems.get(i);
 
+            // Remove currently associated listener with the old command
+            ActionListener[] al = recentFile.getActionListeners();
+
+            if (al.length != 0){
+                recentFile.removeActionListener(al[0]);
+            }
+
+            // Set new listener with the correct command
             recentFile.addActionListener(notepad);
             recentFile.setActionCommand(i + "");
+
+            // Add to menu
             openRecentFileMenu.add(recentFile);
         }
     }
