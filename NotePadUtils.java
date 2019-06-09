@@ -35,6 +35,8 @@ public class NotePadUtils {
     private static ArrayList<JMenuItem> recentMenuItems; // Tracks file-associated GUI elements
     private static int recentFileCount = 0; // Tracks how many recent files are saved
 
+    private static final int MAX_RECENT_FILES = 5;
+
     // SAVE FILE FUNCTIONALITY
 
     // Writes written text to a new file to save
@@ -74,8 +76,7 @@ public class NotePadUtils {
         try {
             FileReader fileReader = new FileReader(fileToOpen);
             BufferedReader buffReader = new BufferedReader(fileReader);
-            StyledDocument doc = (StyledDocument) textPane.getStyledDocument();
-            char c;
+
             textPane.read(buffReader, null);
             buffReader.close();
             fileReader.close();
@@ -85,12 +86,8 @@ public class NotePadUtils {
     }
 
     // Manages opening recent files
-    public static void openRecent(String actionIndex, JTextPane textPane){
-
-        int fileToOpenIndex = Integer.parseInt(actionIndex);
-
+    public static void openRecent(int fileToOpenIndex, JTextPane textPane){
         openFile(textPane, recentFiles.get(fileToOpenIndex));
-
     }
 
     // Manages recent files: saves information of opened files, creates GUI elements for those files, and removes older files
@@ -103,19 +100,18 @@ public class NotePadUtils {
         }
 
         String fileName = file.getName();
+        int index;
 
-        // Checks and manages repeated files -> a previously opened file is moved to the most recent position, and out of it's original order
-        if (recentFiles.contains(file)){
-            int index = recentFiles.indexOf(file);
+        // Checks and manages repeated files -> a previously opened file is moved to the most recent position, and out of its original order
+        if ((index = recentFiles.indexOf(file)) != -1){
             recentFiles.remove(file);
-            JMenuItem menuItem = recentMenuItems.remove(index); // don't have name of menu item, so it needs to be removed by index
-            openRecentFileMenu.remove(menuItem);
+            openRecentFileMenu.remove(recentMenuItems.remove(index));
             recentFileCount--;
         }
 
         // If there are the maximum recent files, remove the oldest
-        if (recentFileCount == 5){
-            recentFiles.remove(4); // The file itself
+        if (recentFileCount == MAX_RECENT_FILES){
+            recentFiles.remove(MAX_RECENT_FILES - 1); // The file itself
             recentFileCount--;
             openRecentFileMenu.remove(recentMenuItems.remove(4)); // The file GUI element
         }
@@ -126,8 +122,8 @@ public class NotePadUtils {
         recentFileCount++;
         
         // If there are no other recent files, add the first one
-        // Otherwise, "refresh" the GUI such that the top file is the most recent, and the bottom in the order is the 5th oldest
-        if (recentFileCount == 0){
+        // Otherwise, "refresh" the GUI such that the top file is the most recent, and the bottom in the order is the oldest
+        if (recentFileCount == 1){
             openRecentFileMenu.add(recentMenuItems.get(0));
         } else {
             refreshRecentFiles(openRecentFileMenu, notepad);
@@ -136,17 +132,14 @@ public class NotePadUtils {
 
     // Removes all GUI elements to add elements back in the correct order
     private static void refreshRecentFiles(JMenu openRecentFileMenu, SimpleNotePad notepad){
-        for (JMenuItem recentFile : recentMenuItems){
-            openRecentFileMenu.remove(recentFile);
-        }
+        openRecentFileMenu.removeAll();
         
-        int i = 0;
+        for (int i = 0; i < recentMenuItems.length(); i++){
+            JMenuItem recentFile = recentMenuItems.get(i);
 
-        for (JMenuItem recentFile : recentMenuItems){
             recentFile.addActionListener(notepad);
             recentFile.setActionCommand(i + "");
             openRecentFileMenu.add(recentFile);
-            i++;
         }
     }
 

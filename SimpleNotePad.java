@@ -47,10 +47,10 @@ public class SimpleNotePad extends JFrame implements ActionListener {
 
     JMenu openRecentFileMenu = new JMenu("Recent");
 
-    JMenuItem undoFileMenuItem = new JMenuItem("Undo");
-    JMenuItem copyMenuFileItem = new JMenuItem("Copy");
-    JMenuItem pasteMenuFileItem = new JMenuItem("Paste");
-    JMenuItem replaceMenuFileItem = new JMenuItem("Replace");
+    JMenuItem undoMenuItem = new JMenuItem("Undo");
+    JMenuItem copyMenuItem = new JMenuItem("Copy");
+    JMenuItem pasteMenuItem = new JMenuItem("Paste");
+    JMenuItem replaceMenuItem = new JMenuItem("Replace");
 
     // Creates pop-up menu frame for replacing text prompt
     JFrame replaceWordFrame = new JFrame();
@@ -62,7 +62,7 @@ public class SimpleNotePad extends JFrame implements ActionListener {
         JMenuItem[] fileMenuItems = {newFileMenuItem, saveFileMenuItem, printFileMenuItem, openFileMenuItem};
         String[] fileMenuTitle = {"new", "save", "print", "open"};
         
-        JMenuItem[] actionMenuItems = {copyMenuFileItem, pasteMenuFileItem, undoFileMenuItem, replaceMenuFileItem};
+        JMenuItem[] actionMenuItems = {copyMenuItem, pasteMenuItem, undoMenuItem, replaceMenuItem};
         String[] actionMenuTitle = {"copy", "paste", "undo", "replace"};
 
         int i = 0;
@@ -142,7 +142,11 @@ public class SimpleNotePad extends JFrame implements ActionListener {
                 break;
 
             default: // catches all "open recent file" options
-                NotePadUtils.openRecent(action, textPane);
+
+                try {
+                    int action = Integer.parseInt(action);
+                    NotePadUtils.openRecent(action, textPane);
+                } catch (NumberFormatException ex){}
         }
     }
 }
