@@ -16,8 +16,7 @@ Code Refactoring
         saveFile() and printFile() within this.
         Paste had unnecessary lines of code, which were then removed, leaving "d.paste()" alone.
 
-        Once the if/else was paired down to abstracted methods, it was translated to a switch statement 
-        for better readability and fewer unnecessary characters.
+        Once the if/else was paired down to abstracted methods, then it was translated to functions within actionListener
 
         Within NotePadUtils, "open" was broken into more methods to allow recent file tracking and separation 
         of selecting a file and opening said file. 
