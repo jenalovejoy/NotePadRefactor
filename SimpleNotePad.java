@@ -29,7 +29,7 @@ import javax.swing.text.StyledDocument;
 import jdk.jfr.Event.*;
 import java.io.FileFilter;
 
-public class SimpleNotePad extends JFrame implements ActionListener {
+public class SimpleNotePad extends JFrame {
 
     // Creates all menus
     JMenuBar menuBar = new JMenuBar();
@@ -60,37 +60,32 @@ public class SimpleNotePad extends JFrame implements ActionListener {
         setTitle("A Simple Notepad Tool");
         
         JMenuItem[] fileMenuItems = {newFileMenuItem, saveFileMenuItem, printFileMenuItem, openFileMenuItem};
-        String[] fileMenuTitle = {"new", "save", "print", "open"};
-        
-        JMenuItem[] actionMenuItems = {copyMenuItem, pasteMenuItem, undoMenuItem, replaceMenuItem};
-        String[] actionMenuTitle = {"copy", "paste", "undo", "replace"};
+        JMenuItem[] actionMenuItems = {copyMenuItem, pasteMenuItem, replaceMenuItem};
 
-        int i = 0;
-
-        // Add each file menu item to the file menu, and attach a listener for user interaction
-        for (JMenuItem m : fileMenuItems){
-            m.addActionListener(this);
-            m.setActionCommand(fileMenuTitle[i]);
+        for (int i = 0; i < fileMenuItems.length; i++){
+            JMenuItem m = fileMenuItems[i];
             fileMenu.add(m);
-            if (i < fileMenuItems.length - 1){ // if it's not the last element, add a separator
+            if (i < fileMenuItems.length - 1){
                 fileMenu.addSeparator();
             }
-            i++;
         }
 
-        fileMenu.add(openRecentFileMenu);
-
-        // Add each edit menu item to the edit menu, and attach a listener for user interaction
-        for (int i = 0; i < actionMenuItems.length(); i++){
-            JMenuItem m = actionMenuItems.get(i);
-            m.addActionListener(this);
-            m.setActionCommand(actionMenuTitle[i]);
+        for (JMenuItem m : actionMenuItems){
             editMenu.add(m);
         }
 
-        // Add file and edit menus to menu bar
+        fileMenu.add(openRecentFileMenu);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+
+        newFileMenuItem.addActionListener(e -> textPane.setText("")); 
+        saveFileMenuItem.addActionListener(e -> NotePadUtils.saveFile(textPane));
+        printFileMenuItem.addActionListener(e -> NotePadUtils.printFile(textPane, this));
+        openFileMenuItem.addActionListener(e -> NotePadUtils.openFileChooser(textPane, openRecentFileMenu, this));
+        
+        copyMenuItem.addActionListener(e -> textPane.copy());
+        pasteMenuItem.addActionListener(e -> textPane.paste());
+        replaceMenuItem.addActionListener(e -> NotePadUtils.replaceWord(textPane, replaceWordFrame));
 
         setJMenuBar(menuBar);
         add(new JScrollPane(textPane));
@@ -105,46 +100,4 @@ public class SimpleNotePad extends JFrame implements ActionListener {
         SimpleNotePad app = new SimpleNotePad();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        String action = e.getActionCommand();
-
-        switch (action){
-            case "new": // Creating a new file
-                textPane.setText("");
-                break;
-
-            case "save": // Saving current file
-                NotePadUtils.saveFile(textPane);
-                break;
-
-            case "open": // Opening a file
-                NotePadUtils.openFileChooser(textPane, openRecentFileMenu, this);
-                break;
-
-            case "print": // Print current file
-                NotePadUtils.printFile(textPane, this);
-                break;
-            
-            case "copy": // Copy highlighted text
-                textPane.copy();
-                break;
-
-            case "paste": // Paste previously copied text
-                textPane.paste();  
-                break; 
-
-            case "replace": // Replace highlighted text with user-prompted input
-                NotePadUtils.replaceWord(textPane, replaceWordFrame);
-                break;
-
-            default: // catches all "open recent file" options
-                try {
-                    int recentFileIndex = Integer.parseInt(action);
-                    NotePadUtils.openRecent(recentFileIndex, textPane, openRecentFileMenu, this);
-
-                } catch (NumberFormatException ex){}
-        }
-    }
 }
