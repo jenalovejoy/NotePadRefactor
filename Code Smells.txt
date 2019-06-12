@@ -1,0 +1,10 @@
+"Code Smells" (ordered by importance)
+
+    - Method actionPerformed() is too bloated/long
+    - actionPerformed() has a long, complex if/else statement 
+    - Save, Paste, Print conditions within actionPerformed() could be extracted into their own methods
+    - Line 24-33 - Undescriptive, confusing variable names make the rest of the program hard to parse
+    - Line 37-59 - GUI element set-up has many repeated statements
+    - Line 76 - "returnVal" only used as a temp in if statement, so fc.showSaveDialog(null) can just be called in the if statement
+    - Line 71 - e.getActionCommand() is called in each if statement, could be saved in one variable so it's not continually called
+    - Line 116 - Undo does not currently provide any functionality
